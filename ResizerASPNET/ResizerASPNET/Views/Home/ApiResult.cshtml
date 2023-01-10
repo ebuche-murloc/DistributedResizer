@@ -1,0 +1,21 @@
+﻿@model ResizerASPNET.Resizer.ResizeStatusInfo
+
+<div class="text-center">
+
+    @if (Model.Resized)
+    {
+        <p class="fw-bold p-1" id="resulttext">Загружено</p>
+        <a id="miniolink p-1" class="btn btn-primary" href="@Model.MinioLink" role="button">Загрузить на компьютер</a>
+    }
+
+    @if (Model.Error)
+    {
+        <p class="fw-bold" id="resulttext">Не удается скачать видео по данной ссылке</p>
+    }
+
+    @if (!Model.Resized && !Model.Error)
+    {
+        <p class="fw-bold" id="resulttext">Загрузка...</p>
+    }
+
+</div>

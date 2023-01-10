@@ -1,0 +1,134 @@
+﻿@model IndexViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+
+    <div class="row p-2">
+        <input type="file" accept=".jpg,.jpeg,.png" id="fileInput" onchange="validateFileType()"><br>
+        <input type="button" value="Upload Image" id="uploadB" onclick="uploadFile()" disabled><br>
+    </div>
+
+    <div class="row p-2">
+        <img id="preview" height="200">
+    </div>
+
+    <div class="row p-2">
+        <form action="/resi" method="get">
+            <label id="height">Height <input type="number" id="inpH" name="height" /></label><br>
+            <label id="width">Width <input type="number" id="inpW" name="width" /></label><br>
+            <p id="serverMsg" name="filename"></p><br>
+        </form><br>
+    </div>
+
+    <div class="container" id="apiresult">
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function validateFileType() {
+            var fileName = document.getElementById("fileInput").value;
+            var idxDot = fileName.lastIndexOf(".") + 1;
+            var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+            if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
+                previewFile();
+                document.getElementById("uploadB").disabled = false;
+            } else {
+                document.getElementById("uploadB").disabled = true;
+                document.getElementById('preview').removeAttribute('src');
+                document.getElementById("valMsg").innerHTML = "Only jpg/jpeg and png files are allowed!";
+            }
+        }
+
+        function previewFile() {
+            const preview = document.getElementById('preview');
+            var file = document.getElementById('fileInput').files[0];
+
+            const reader = new FileReader();
+            reader.addEventListener("load", function () {
+                preview.src = reader.result; // show image in <img> tag
+            }, false);
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function uploadFile(file) {
+            var file = document.getElementById('fileInput').files[0];
+            console.log(file.name)
+            var height = document.getElementById("inpH").value;
+            var width = document.getElementById("inpW").value;
+            console.log(height);
+            console.log(width);
+
+            if (file) {
+                var formData = new FormData();
+
+                formData.append('file', file);
+                formData.append('height', height);
+                formData.append('width', width);
+                var link = "/Home/Resize";
+                fetch(link, {
+                    method: 'POST',
+                    body: formData,
+                    })
+                    .then((response) => { return response.text(); })
+                    .then((result) => {
+                        $("#apiresult").empty();
+                        $("#apiresult").append(result);
+                    });
+            }
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#download').click(function (e) {
+                e.preventDefault();
+                var link = $('#link').val();
+                console.log(link)
+                waitForResponse(link);
+            });
+        });
+
+        function waitForResponse(file) {
+            var file = document.getElementById('fileInput').files[0];
+            console.log(file.name)
+            var height = document.getElementById("inpH").value;
+            var width = document.getElementById("inpW").value;
+            console.log(height);
+            console.log(width);
+            console.log('waitforresponse');
+
+            var formData = new FormData();
+
+            formData.append('file', file);
+            formData.append('height', height);
+            formData.append('width', width);
+
+            $.ajax({
+                method: "POST",
+                url: "@Url.Action("Resize", "Home")",
+                file: file,
+                height: height,
+                width: width,
+                processData: false
+            }).done(function(html) {
+                $("#apiresult").empty();
+                $("#apiresult").append(html);
+                var resulttext = $('#resulttext').text();
+                console.log(resulttext);
+                if (resulttext == 'Загрузка...') {
+                    console.log('start waitforresponse');
+                    waitForResponse(link);
+                }
+            });
+        }
+
+    </script>
+}
