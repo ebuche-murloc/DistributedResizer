@@ -1,5 +1,6 @@
 using ResizerASPNET.Resizer;
 using ResizerASPNET.MinIO;
+using ResizerASPNET.Rabbit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<IMinIOProvider, MinIOProvider>();
 builder.Services.AddSingleton<IResizerAPI, ResizerAPI>();
+builder.Services.AddSingleton<IRpcClient, RpcRabbit>();
 
 var app = builder.Build();
 

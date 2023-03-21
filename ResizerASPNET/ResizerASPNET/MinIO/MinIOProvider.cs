@@ -72,8 +72,6 @@ namespace ResizerASPNET.MinIO
                         .WithStreamData(filestream)
                         .WithObjectSize(filestream.Length)
                         .WithContentType(contentType);
-
-                    Console.WriteLine("huetaaaaaaa" + putObjectArgs.ToString());
                     _minioClient.PutObjectAsync(putObjectArgs).Wait();
                 }
             }

@@ -1,5 +1,6 @@
 using ResizerAPI.MinIO;
 using ResizerAPI.ImageResize;
+using ResizerAPI.Rabbit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<IMinIOProvider, MinIOProvider>();
 builder.Services.AddSingleton<IResizer, Resizer>();
+builder.Services.AddHostedService<RpcRabbit>();
 
 var app = builder.Build();
 

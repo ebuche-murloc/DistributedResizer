@@ -20,6 +20,14 @@ namespace ResizerASPNET.Controllers
         [HttpPost]
         public IActionResult Resize(IFormCollection data, IFormFile file)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            ResizeStatusInfo resizeStatusInfo = new ResizeStatusInfo(false, "", true);
+
+            if (!(file.Length > 0) || !file.ContentType.Contains("image"))
+                return PartialView("ApiResult", resizeStatusInfo);
+
             var height = int.Parse(data["height"]);
             var width = int.Parse(data["width"]);
             var uploadFolder = "cropprocess";
@@ -31,7 +39,9 @@ namespace ResizerASPNET.Controllers
                 
                 _minIOProvider.UploadFile(file, minioFilename);
 
-                ResizeStatusInfo resizeStatusInfo = _resizerAPI.Resize(height, width, minioFilename);
+                resizeStatusInfo = _resizerAPI.Resize(height, width, minioFilename);
+                stopwatch.Stop();
+                Console.WriteLine(stopwatch.ElapsedMilliseconds);
                 return PartialView("ApiResult", resizeStatusInfo);
             }
         }

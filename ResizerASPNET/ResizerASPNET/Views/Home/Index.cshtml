@@ -12,13 +12,13 @@
     </div>
 
     <div class="row p-2">
-        <img id="preview" height="200">
+        <img style='height: 300px; width: 100%; object-fit: contain' id="preview">
     </div>
 
     <div class="row p-2">
         <form action="/resi" method="get">
-            <label id="height">Height <input type="number" id="inpH" name="height" /></label><br>
-            <label id="width">Width <input type="number" id="inpW" name="width" /></label><br>
+            <label id="height">Height <input type="number" id="inpH" name="height" min="1" oninput="validity.valid||(value='');" /></label><br>
+            <label id="width">Width <input type="number" id="inpW" name="width" min="1" oninput="validity.valid||(value='');" /></label><br>
             <p id="serverMsg" name="filename"></p><br>
         </form><br>
     </div>
@@ -37,7 +37,7 @@
             var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
             if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
                 previewFile();
-                document.getElementById("uploadB").disabled = false;
+
             } else {
                 document.getElementById("uploadB").disabled = true;
                 document.getElementById('preview').removeAttribute('src');
@@ -46,12 +46,32 @@
         }
 
         function previewFile() {
+            var ready = false;
+
+            var check = function() {
+                console.log("asasadas");
+                if (ready === true) {
+                    var myImg = document.querySelector("#preview"); // paste height and width
+                    document.getElementById("inpH").value = myImg.naturalHeight;
+                    document.getElementById("inpW").value = myImg.naturalWidth;
+
+                    document.getElementById("uploadB").disabled = false; //enable upload button
+                    return;
+                }
+                setTimeout(check, 100);
+            }
+
+            check();
+
             const preview = document.getElementById('preview');
             var file = document.getElementById('fileInput').files[0];
-
             const reader = new FileReader();
+
+
             reader.addEventListener("load", function () {
                 preview.src = reader.result; // show image in <img> tag
+
+                ready = true;
             }, false);
             if (file) {
                 reader.readAsDataURL(file);
@@ -66,7 +86,7 @@
             console.log(height);
             console.log(width);
 
-            if (file) {
+            if (file && height != "" && width != "") {
                 var formData = new FormData();
 
                 formData.append('file', file);

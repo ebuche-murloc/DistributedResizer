@@ -18,6 +18,8 @@ namespace ResizerAPI.Controllers
         [HttpGet]
         public string Resize(int height, int width, string file)
         {
+            Console.WriteLine(Environment.GetEnvironmentVariable("NAME"));
+
             string errorMessage = JsonConvert.SerializeObject(new ResizeStatusInfo(false, "", true));
 
             if (file is null )
